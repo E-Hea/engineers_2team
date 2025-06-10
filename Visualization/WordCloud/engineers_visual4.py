@@ -4,10 +4,10 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 # MariaDB 연결 정보 설정
-host = '127.0.0.1'  # 본인 환경에 맞게 수정
+host = ''  # 본인 환경에 맞게 수정
 port = 3306
 user = 'root'  # 본인 DB 계정
-password = '2023111813'  # 본인 DB 비밀번호
+password = ''  # 본인 DB 비밀번호
 database = 'engineers'
 
 # DB 연결
