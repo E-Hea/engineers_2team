@@ -10,9 +10,9 @@ import pyLDAvis.gensim_models as gensimvis
 
 # 1️⃣ MariaDB에서 데이터 불러오기
 connection = pymysql.connect(
-    host='127.0.0.1',
+    host='',
     user='root',
-    password='2023111813',
+    password='3',
     database='engineers',
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor
