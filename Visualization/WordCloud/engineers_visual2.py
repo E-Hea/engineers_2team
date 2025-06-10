@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 # 1. MariaDB 연결 설정
 conn = pymysql.connect(
-    host='127.0.0.1',      # 또는 MariaDB 서버 주소
+    host='',      # 또는 MariaDB 서버 주소
     port=3306,             # 기본 포트
     user='root',  # 사용자 계정
-    password='2023111813',  # 비밀번호
+    password='',  # 비밀번호
     db='engineers',        # 데이터베이스명
     charset='utf8mb4'
 )
