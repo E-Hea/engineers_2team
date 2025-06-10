@@ -1,0 +1,56 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from collections import Counter
+import re
+
+# 데이터 불러오기
+df = pd.read_csv('/content/merged_jobs_preprocessing.csv')
+
+# 키워드 정의
+skill_keywords = [
+    'java', 'python', 'c', 'c++', 'c#', 'r', 'scala', 'sql', 'nosql', 'mysql',
+    'oracle', 'mongodb', 'redis', 'spring', 'django', 'flask',
+    'node', 'react', 'vue', 'angular', 'html', 'css', 'javascript', 'typescript',
+    'kotlin', 'swift', 'tensorflow', 'pytorch', 'pandas', 'numpy',
+    'aws', 'gcp', 'azure', 'docker', 'kubernetes', 'git', 'jira', 'firebase',
+    'powerbi', 'tableau', 'figma', 'zeplin'
+]
+skill_keywords_lower = list(set(skill_keywords))
+
+skill_series = df['스킬'].dropna().astype(str)
+skill_tokens = []
+
+for entry in skill_series:
+    tokens = re.split(r'[,\n\/\|\(\)\[\]·]', entry)
+    tokens = [re.sub(r'[^a-zA-Z0-9+#]+', '', t).lower() for t in tokens]  
+    tokens = [t for t in tokens if len(t) > 1]  
+    skill_tokens.extend(tokens)
+
+# 키워드 필터링
+matched_skills = [token for token in skill_tokens if token in skill_keywords_lower]
+
+# 통계 출력
+print(f"📦 총 공고 수: {len(df)}")
+print(f"🔍 스킬 추출 공고 수: {len(skill_series)}")
+print(f"✅ 매칭된 스킬 수: {len(matched_skills)} (고유: {len(set(matched_skills))})")
+
+# 시각화
+if matched_skills:
+    word_counts = Counter(matched_skills)
+    top_10 = word_counts.most_common(10)
+    top_words, top_counts = zip(*top_10)
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=list(top_counts), y=list(top_words), color='#6600FF')
+
+    for i, count in enumerate(top_counts):
+        plt.text(count - 0.5, i, str(count), va='center', ha='right', fontsize=10, color='white')
+
+    plt.title("상위 10개의 공통요구스킬", fontsize=14)
+    plt.xlabel("빈도수")
+    plt.grid(axis='x', linestyle='--', alpha=0.6)
+    plt.tight_layout()
+    plt.show()
+else:
+    print("⚠️ 기술 키워드를 찾을 수 없습니다. 데이터나 키워드 리스트를 다시 확인하세요.")
