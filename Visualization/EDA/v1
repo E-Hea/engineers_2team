@@ -1,0 +1,57 @@
+import pandas as pd
+from sqlalchemy import create_engine
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 한글 폰트 설정
+matplotlib.rc('font', family='Malgun Gothic')  # 윈도우
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
+
+# DB 연결 정보 설정
+engine = create_engine("mysql+pymysql://root:1/engineers")
+
+# 데이터 로딩
+df = pd.read_sql("SELECT * FROM merged_jobs_preprocessing", con=engine)
+
+# 학력 분류 함수
+def classify_education(x):
+    if pd.isna(x): return '무관'
+    if '석사' in x: return '석사'
+    if '박사' in x: return '박사'
+    if '4년' in x: return '학사'
+    if '2,3년' in x: return '초대졸'
+    if '무관' in x or '고졸' in x: return '무관'
+    return '기타'
+
+df['학력_분류'] = df['학력'].apply(classify_education)
+
+# 직무코드 기준 분석
+roles = ['DA', 'DS', 'DE', 'ML', '기타']
+edu_order = ['무관', '초대졸', '학사', '석사', '박사', '기타']
+
+# subplot 생성
+fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+axes = axes.flatten()
+
+for i, role in enumerate(roles):
+    data = df[df['직무코드'] == role]['학력_분류'].value_counts().reindex(edu_order, fill_value=0)
+
+    # DataFrame 형태로 변환
+    bar_data = pd.DataFrame({
+        '학력_분류': edu_order,
+        '건수': data.values
+    })
+
+    sns.barplot(data=bar_data, x='학력_분류', y='건수', hue='학력_분류', ax=axes[i], palette='Set2', legend=False)
+    axes[i].set_title(f"{role} 직무")
+
+    for j, val in enumerate(data.values):
+        axes[i].text(j, val, str(val), ha='center', va='bottom', fontsize=8)
+
+# 남는 subplot 제거
+for j in range(len(roles), len(axes)):
+    axes[j].axis('off')
+
+plt.tight_layout()
+plt.show()
