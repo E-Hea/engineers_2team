@@ -1,0 +1,70 @@
+import pandas as pd
+from sqlalchemy import create_engine
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 한글 폰트 설정
+matplotlib.rc('font', family='Malgun Gothic')  # 윈도우
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
+
+# DB 연결 정보 설정
+engine = create_engine("mysql+pymysql://root:/engineers")
+
+# 데이터 로딩
+df = pd.read_sql("SELECT * FROM merged_jobs_preprocessing", con=engine)
+
+# 학력 분류 함수
+def classify_education(x):
+    if pd.isna(x): return '무관'
+    if '석사' in x: return '석사'
+    if '박사' in x: return '박사'
+    if '4년' in x: return '학사'
+    if '2,3년' in x: return '초대졸'
+    if '무관' in x or '고졸' in x: return '무관'
+    return '기타'
+
+df['학력_분류'] = df['학력'].apply(classify_education)
+
+# 직무코드 리스트 및 학력 순서
+roles = ['DA', 'DS', 'DE', 'ML', '기타']
+edu_order = ['무관', '초대졸', '학사', '석사', '박사', '기타']
+
+# 학력 분포 비율 계산
+pivot = df[df['직무코드'].isin(roles)].pivot_table(
+    index='직무코드',
+    columns='학력_분류',
+    aggfunc='size',
+    fill_value=0
+)
+pivot = pivot[edu_order]
+pivot_pct = pivot.div(pivot.sum(axis=1), axis=0) * 100
+
+# 시각화
+fig, ax = plt.subplots(figsize=(12, 6))
+bottoms = [0] * len(pivot_pct)
+
+colors = plt.cm.Set2.colors  # 색상 팔레트
+edu_labels = pivot_pct.columns.tolist()
+
+for i, edu in enumerate(edu_labels):
+    values = pivot_pct[edu].values
+    bars = ax.bar(pivot_pct.index, values, bottom=bottoms, label=edu, color=colors[i % len(colors)])
+
+    # 비율 숫자 표시
+    for bar, value in zip(bars, values):
+        if value > 3:  # 3% 이상인 경우에만 표시 (너무 좁은 영역 제외)
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_y() + bar.get_height() / 2,
+                f"{value:.1f}%",
+                ha='center', va='center', fontsize=8, color='black'
+            )
+    bottoms = [b + v for b, v in zip(bottoms, values)]
+
+ax.set_title('직무별 학력 요구 비율 (%)')
+ax.set_xlabel('직무')
+ax.set_ylabel('비율 (%)')
+ax.legend(title='학력', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
