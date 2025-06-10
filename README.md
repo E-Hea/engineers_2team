@@ -67,11 +67,11 @@
 | 웹 크롤링  | Selenium, BeautifulSoup             |
 | 데이터 처리| Pandas                             |
 | DB         | MariaDB (with HeidiSQL)            |
-| 자동화     | Crontab (Linux), Windows Scheduler |
+| 자동화     |  Windows Scheduler                  |
 
 ---
 
-## 🔄 향후 발전 방향
+## 향후 발전 방향
 
 - **채용 트렌드 시각화 대시보드 구현**
 - **자연어처리(NLP) 적용하여 키워드 자동 추출**
