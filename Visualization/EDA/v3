@@ -1,0 +1,85 @@
+import pandas as pd
+import re
+from sqlalchemy import create_engine
+import matplotlib
+import matplotlib.pyplot as plt
+
+# 한글 폰트 설정
+matplotlib.rc('font', family='Malgun Gothic')  # 윈도우
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
+
+# DB 연결 정보 설정
+engine = create_engine("mysql+pymysql://root1/engineers")
+
+# 데이터 로딩
+df = pd.read_sql("SELECT * FROM merged_jobs_preprocessing", con=engine)
+
+# 경력 구간 분류 함수
+def classify_experience(x):
+    if pd.isna(x):
+        return '무관'
+    x = x.lower().strip()
+    if '신입' in x or '무관' in x:
+        return '무관'
+    numbers = re.findall(r'\d+', x)
+    if len(numbers) == 2:
+        avg = (int(numbers[0]) + int(numbers[1])) / 2
+    elif len(numbers) == 1:
+        avg = int(numbers[0])
+    else:
+        return '기타'
+
+    if avg <= 2:
+        return '1~2년'
+    elif avg <= 5:
+        return '3~5년'
+    elif avg <= 10:
+        return '6~10년'
+    else:
+        return '10년 이상'
+
+
+# 경력 구간 열 생성
+df['경력_구간'] = df['경력'].apply(classify_experience)
+
+# 직무코드 리스트
+job_codes = ['DA', 'DS', 'DE', 'ML']
+
+# '기타' 직무는 지정된 코드에 없거나 결측인 경우
+df['직무코드'] = df['직무코드'].fillna('기타')
+df.loc[~df['직무코드'].isin(job_codes), '직무코드'] = '기타'
+
+exp_order = ['무관', '1~2년', '3~5년', '6~10년', '10년 이상', '기타']
+colors = plt.cm.Set2.colors
+
+# subplot 설정: 2행 3열 (총 6개 공간), 마지막은 빈 공간일 수 있음
+fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+axes = axes.flatten()
+
+for i, code in enumerate(job_codes + ['기타']):
+    subset = df[df['직무코드'] == code]
+    exp_counts = subset['경력_구간'].value_counts().reindex(exp_order, fill_value=0)
+
+    # 총합이 0이면 pie chart 생략
+    if exp_counts.sum() == 0:
+        axes[i].text(0.5, 0.5, '데이터 없음', ha='center', va='center', fontsize=14)
+        axes[i].set_title(f'{code} 직무별 경력 분포')
+        axes[i].axis('off')
+        continue
+
+    axes[i].pie(
+        exp_counts.values,
+        labels=exp_counts.index,
+        autopct='%1.1f%%',
+        startangle=140,
+        colors=colors
+    )
+    axes[i].set_title(f'{code} 직무별 경력 분포')
+    axes[i].axis('equal')
+
+# 마지막 빈 subplot 제거 (6번째)
+if len(job_codes) + 1 < len(axes):
+    fig.delaxes(axes[-1])
+
+plt.tight_layout()
+plt.show()
