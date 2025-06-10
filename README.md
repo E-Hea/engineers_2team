@@ -40,12 +40,19 @@
 
 ## 시스템 구성도
 [크롤러 (Selenium / BeautifulSoup)]
+
 ↓
+
 [데이터 정제 및 중복 제거 (Pandas)]
+
 ↓
+
 [MariaDB 저장]
+
 ↓
+
 [자동 실행 (스케줄러)]
+
 
 
 ---
