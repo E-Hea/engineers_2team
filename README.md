@@ -57,6 +57,7 @@ EDA를 통해 데이터사이언스 관련 4개 주요 직무(DA, DS, DE, ML)에
 
 ## 
 🟦 Data Analyst (DA)
+
 자격요건 - 실무 중심의 경력 및 데이터 운영 경험 강조
 
 자주 언급되는 스킬: SQL, Oracle, AWS
@@ -69,6 +70,7 @@ EDA를 통해 데이터사이언스 관련 4개 주요 직무(DA, DS, DE, ML)에
 
 ## 
 🟩 Data Scientist (DS)
+
 자격요건 - 모델 설계·적용 능력 및 문제 해결 능력 강조, 효율적 데이터 처리 및 성능 개선 능력 요구
 
 스킬 키워드: Python, SQL, 머신러닝, 데이터 분석
@@ -81,6 +83,7 @@ EDA를 통해 데이터사이언스 관련 4개 주요 직무(DA, DS, DE, ML)에
 
 ## 
 🟥 Data Engineer (DE)
+
 자격요건 - 데이터 파이프라인 구축, 플랫폼 설계 등 실무 역량 중시
 
 스킬 키워드: Python, SQL, Java, Linux
@@ -91,6 +94,7 @@ EDA를 통해 데이터사이언스 관련 4개 주요 직무(DA, DS, DE, ML)에
 
 ## 
 🟨 Machine Learning Engineer (ML)
+
 자격요건 - 머신러닝 모델 개발 및 연구 역량 요구, 전공 지식(컴퓨터공학·통계·수학)과 대학원 수준 학위 선호
 
 스킬 키워드: PyTorch, TensorFlow, AI, Python
