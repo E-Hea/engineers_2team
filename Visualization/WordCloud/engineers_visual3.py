@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # MariaDB 연결 정보 (본인 환경에 맞게 수정하세요)
 conn = pymysql.connect(
-    host='127.0.0.1',      # 또는 MariaDB 서버 주소
+    host='11',      # 또는 MariaDB 서버 주소
     port=3306,             # 기본 포트
     user='root',  # 사용자 계정
     password='',  # 비밀번호
